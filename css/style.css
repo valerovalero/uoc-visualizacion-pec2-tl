@@ -1,0 +1,35 @@
+body {
+  font-family: sans-serif;
+}
+
+.timeline {
+  border-left: 2px solid #333;
+  position: relative;
+  margin-left: 50px;
+  padding-left: 20px;
+  height: 800px; /* altura total del timeline */
+}
+
+.event {
+  position: absolute;
+  left: 20px;
+  padding: 5px 10px;
+  background: #f0f0f0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 200px;
+  transition: background 0.2s;
+}
+
+.event:hover {
+  background: #ffd;
+  cursor: pointer;
+}
+
+.year-label {
+  font-weight: bold;
+  position: absolute;
+  left: -50px;
+  width: 50px;
+  text-align: right;
+}
