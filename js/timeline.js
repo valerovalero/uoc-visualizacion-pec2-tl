@@ -10,8 +10,7 @@ d3.csv("data/World Important Dates.csv").then(data => {
       year: +d["Year"],
       month: +d["Month"],
       date: +d["Date"],
-      country: d["Country"],
-      type: d["Type of Event"]
+      country: d["Country"]
     }))
     .filter(d => d.year >= 2000)
     .sort((a, b) => new Date(a.year, a.month - 1, a.date) - new Date(b.year, b.month - 1, b.date));
@@ -21,28 +20,28 @@ d3.csv("data/World Important Dates.csv").then(data => {
     return;
   }
 
-  // Escala vertical según el año
   const minYear = d3.min(events, d => d.year);
   const maxYear = d3.max(events, d => d.year);
+
+  // Escala vertical por año
   const yScale = d3.scaleLinear()
-    .domain([minYear, maxYear + 1]) // +1 para dejar espacio al último año
+    .domain([minYear, maxYear])
     .range([0, timelineHeight]);
 
   // Agrupar eventos por año
   const eventsByYear = d3.group(events, d => d.year);
 
-  // Crear eventos en el timeline
-  eventsByYear.forEach((eventsInYear, year) => {
-    const yearY = yScale(year);
-    const spacing = 25; // separación vertical entre eventos del mismo año
+  // Para cada año, mostrar solo **una ficha** (el primer evento si hay)
+  for (let year = minYear; year <= maxYear; year++) {
+    const yearEvents = eventsByYear.get(year) || [];
+    const event = yearEvents[0] || { name: "", country: "" }; // Si no hay evento, valores vacíos
+    const topPos = yScale(year);
 
-    eventsInYear.forEach((event, i) => {
-      container.append("div")
-        .attr("class", "event")
-        .style("top", (yearY + i * spacing) + "px")
-        .html(`<strong>${event.year}</strong><br>${event.name}<br>${event.country}`);
-    });
-  });
+    container.append("div")
+      .attr("class", "event")
+      .style("top", topPos + "px")
+      .html(`<strong>${year}</strong><br>${event.name}<br>${event.country}`);
+  }
 
   // Crear etiquetas de año (cada 5 años)
   const years = d3.range(minYear, maxYear + 1, 5);
