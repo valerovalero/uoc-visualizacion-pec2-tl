@@ -14,14 +14,18 @@ d3.csv("World Important Dates.csv").then(data => {
       type: d["Type of Event"]
     }))
     .filter(d => d.year >= 2000)
-    .sort((a, b) => {
-      // Ordenar por fecha completa
-      return new Date(a.year, a.month - 1, a.date) - new Date(b.year, b.month - 1, b.date);
-    });
+    .sort((a, b) => new Date(a.year, a.month - 1, a.date) - new Date(b.year, b.month - 1, b.date));
+
+  if (events.length === 0) {
+    console.warn("No hay eventos a partir del año 2000.");
+    return;
+  }
 
   // Escala vertical según el año
+  const minYear = d3.min(events, d => d.year);
+  const maxYear = d3.max(events, d => d.year);
   const yScale = d3.scaleLinear()
-    .domain([d3.min(events, d => d.year), d3.max(events, d => d.year + 1)]) // +1 para separar el último año
+    .domain([minYear, maxYear + 1]) // +1 para dejar espacio al último año
     .range([0, timelineHeight]);
 
   // Agrupar eventos por año
@@ -30,7 +34,7 @@ d3.csv("World Important Dates.csv").then(data => {
   // Crear eventos en el timeline
   eventsByYear.forEach((eventsInYear, year) => {
     const yearY = yScale(year);
-    const spacing = 25; // separación entre eventos del mismo año
+    const spacing = 25; // separación vertical entre eventos del mismo año
 
     eventsInYear.forEach((event, i) => {
       container.append("div")
@@ -41,7 +45,7 @@ d3.csv("World Important Dates.csv").then(data => {
   });
 
   // Crear etiquetas de año (cada 5 años)
-  const years = d3.range(d3.min(events, d => d.year), d3.max(events, d => d.year)+1, 5);
+  const years = d3.range(minYear, maxYear + 1, 5);
   container.selectAll(".year-label")
     .data(years)
     .enter()
