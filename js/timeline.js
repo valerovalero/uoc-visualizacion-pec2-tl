@@ -1,12 +1,9 @@
-// Tamaño del contenedor
 const timelineHeight = 800;
-
 const container = d3.select("#timeline");
 
 // Cargar CSV
-d3.csv("data/World Important Dates.csv").then(data => {
+d3.csv("World Important Dates.csv").then(data => {
 
-  // Convertir fechas y filtrar por año >= 2000
   const events = data
     .map(d => ({
       name: d["Name of Incident"],
@@ -17,23 +14,33 @@ d3.csv("data/World Important Dates.csv").then(data => {
       type: d["Type of Event"]
     }))
     .filter(d => d.year >= 2000)
-    .sort((a, b) => a.year - b.year);
+    .sort((a, b) => {
+      // Ordenar por fecha completa
+      return new Date(a.year, a.month - 1, a.date) - new Date(b.year, b.month - 1, b.date);
+    });
 
-  // Escala vertical
+  // Escala vertical según el año
   const yScale = d3.scaleLinear()
-    .domain([d3.min(events, d => d.year), d3.max(events, d => d.year)])
+    .domain([d3.min(events, d => d.year), d3.max(events, d => d.year + 1)]) // +1 para separar el último año
     .range([0, timelineHeight]);
 
-  // Crear eventos en el timeline
-  container.selectAll(".event")
-    .data(events)
-    .enter()
-    .append("div")
-    .attr("class", "event")
-    .style("top", d => yScale(d.year) + "px")
-    .html(d => `<strong>${d.year}-${String(d.month).padStart(2, "0")}-${String(d.date).padStart(2, "0")}</strong><br>${d.name}<br>${d.country}`);
+  // Agrupar eventos por año
+  const eventsByYear = d3.group(events, d => d.year);
 
-  // Crear etiquetas de años (cada 5 años)
+  // Crear eventos en el timeline
+  eventsByYear.forEach((eventsInYear, year) => {
+    const yearY = yScale(year);
+    const spacing = 25; // separación entre eventos del mismo año
+
+    eventsInYear.forEach((event, i) => {
+      container.append("div")
+        .attr("class", "event")
+        .style("top", (yearY + i * spacing) + "px")
+        .html(`<strong>${event.year}</strong><br>${event.name}<br>${event.country}`);
+    });
+  });
+
+  // Crear etiquetas de año (cada 5 años)
   const years = d3.range(d3.min(events, d => d.year), d3.max(events, d => d.year)+1, 5);
   container.selectAll(".year-label")
     .data(years)
