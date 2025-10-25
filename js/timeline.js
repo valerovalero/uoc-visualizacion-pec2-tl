@@ -40,6 +40,10 @@ d3.csv("data/World Important Dates.csv").then(data => {
     container.append("div")
       .attr("class", "event")
       .style("top", topPos + "px")
+      .style("width", "250px")      // más ancho
+      .style("padding", "10px")     // más padding
+      .style("font-size", "14px")   // fuente un poco más grande
+      .style("line-height", "1.3em")
       .html(`<strong>${year}</strong><br>${event.name}<br>${event.country}`);
   }
 
