@@ -40,12 +40,7 @@ d3.csv("data/World Important Dates.csv").then(data => {
     container.append("div")
       .attr("class", "event")
       .style("top", topPos + "px")
-      .style("width", "250px")      // más ancho
-      .style("padding", "30px")     // más padding
-      .style("font-size", "10px")   // fuente un poco más grande
-      .style("line-height", "1.3em")
-      .html(`<strong>${year}</strong><br>${event.name}<br>${event.country}`);
-  }
+      .html(`<strong>${year}</strong> - ${event.name} - ${event.country}`);  }
 
   // Crear etiquetas de año (cada 5 años)
   const years = d3.range(minYear, maxYear + 1, 5);
