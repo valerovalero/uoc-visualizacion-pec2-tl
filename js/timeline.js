@@ -2,7 +2,7 @@ const timelineHeight = 800;
 const container = d3.select("#timeline");
 
 // Cargar CSV
-d3.csv("World Important Dates.csv").then(data => {
+d3.csv("data/World Important Dates.csv").then(data => {
 
   const events = data
     .map(d => ({
